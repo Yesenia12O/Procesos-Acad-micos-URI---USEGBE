@@ -1,0 +1,25 @@
+<div class="relative min-h-screen overflow-hidden">
+    <!--Fondo base oscuro-->
+    <div class="absolute inset-0 -z-10 bg-gradient-to-b from-blue-950 via-blue-900 to-blue-950"></div>
+    
+    <!--Fondo animado de ondas-->
+    <div class="absolute inset-0 -z-5">
+        <div class="wave wave1"></div>
+        <div class="wave wave2"></div>
+        <div class="wave wave3"></div>
+    </div>
+
+    <!--Navbar-->
+    <app-navbar></app-navbar>
+
+    <!--hero-->
+    <app-hero></app-hero>
+
+    <!-- Contenido principal -->
+    <main class="relative z-10 container mx-auto px-4 py-6">
+        <ng-content></ng-content>
+    </main>
+
+    <!--Footer-->
+    <app-footer></app-footer>
+</div>

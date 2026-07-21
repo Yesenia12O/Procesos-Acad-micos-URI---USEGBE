@@ -1,0 +1,77 @@
+.chart-item {
+    transition: all 0.2s ease;
+    overflow: hidden;
+    min-height: 0;
+}
+
+.chart-item:hover {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.chart-item canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Animación de carga */
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+/* Scroll */
+.overflow-x-auto::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 4px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+}
+
+/* Select compacto */
+select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 6px center;
+    padding-right: 18px;
+    background-color: white;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .grid-cols-2.md\:grid-cols-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3 {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+    .grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Contenedor de gráficos */
+#chartContainer {
+    min-height: 100px;
+}

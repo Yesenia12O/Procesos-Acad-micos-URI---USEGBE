@@ -1,0 +1,54 @@
+/* src/app/shared/layouts/main-layout/main-layout.css */
+.wave {
+    position: absolute;
+    bottom: 0;
+    left: -50%;
+    width: 200%;
+    height: 300px;
+    transform-origin: center;
+    pointer-events: none; /* Para que no interfiera con clicks */
+}
+
+.wave1 {
+    background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 80px,
+        rgba(0, 51, 160, 0.15) 80px,
+        rgba(0, 51, 160, 0.15) 160px
+    );
+    animation: waveFloat 20s ease-in-out infinite;
+    bottom: -100px;
+}
+
+.wave2 {
+    background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 120px,
+        rgba(251, 146, 60, 0.1) 120px,
+        rgba(251, 146, 60, 0.1) 240px
+    );
+    animation: waveFloat 25s ease-in-out infinite reverse;
+    bottom: -50px;
+}
+
+.wave3 {
+    background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 60px,
+        rgba(255, 255, 255, 0.05) 60px,
+        rgba(255, 255, 255, 0.05) 120px
+    );
+    animation: waveFloat 15s ease-in-out infinite;
+    bottom: -150px;
+}
+
+@keyframes waveFloat {
+    0% { transform: translateX(0) scaleY(1); }
+    25% { transform: translateX(25%) scaleY(1.2); }
+    50% { transform: translateX(50%) scaleY(0.8); }
+    75% { transform: translateX(75%) scaleY(1.3); }
+    100% { transform: translateX(100%) scaleY(1); }
+}

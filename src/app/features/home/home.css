@@ -1,0 +1,58 @@
+/*Graficos mas compactos*/
+.chart-item {
+    transition: all 0.2s ease;
+}
+
+.chart-item:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+/*Animacion de carga*/
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+/*Scroll para la tabla*/
+.overflow-x-auto::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 4px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+}
+
+/*Select personalizado compacto*/
+select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    padding-right: 24px;
+    background-color: white;
+}
+
+/*Responsive*/
+@media (max-width: 768px) {
+    .grid-cols-2.md\:grid-cols-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .grid-cols-1.md\:grid-cols-2 {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,60 @@
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Efecto de elevación */
+.hero-section {
+    transition: all 0.3s ease;
+}
+
+.hero-section:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+}
+
+/* Efecto de brillo en hover */
+.hero-section::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(251, 146, 60, 0.05), transparent 50%);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+}
+
+.hero-section:hover::after {
+    opacity: 1;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .hero-section h1 {
+        font-size: 2rem;
+    }
+
+    .hero-section .max-w-4xl {
+        padding: 0 0.5rem;
+    }
+}
+
+/* Efecto de texto degradado */
+.bg-clip-text {
+    -webkit-background-clip: text;
+    background-clip: text;
+}

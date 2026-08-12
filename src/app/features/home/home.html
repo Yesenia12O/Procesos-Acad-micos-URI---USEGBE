@@ -3,7 +3,7 @@
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
         <div class="flex items-center justify-between mb-3">
             <div class="flex items-center gap-2">
-                <span class="material-icons text-orange-500 text-xl">cloud_upload</span>
+                <span class="material-icons text-[#d4af37] text-xl">cloud_upload</span>
                 <h2 class="text-sm font-semibold text-gray-800">Cargar y Generar Dashboard</h2>
             </div>
             @if (fileName) {
@@ -12,42 +12,61 @@
         </div>
 
         <div
-            class="bg-gray-50 rounded-lg p-4 border-2 border-dashed border-gray-300 hover:border-orange-400 transition-colors duration-300">
+            class="bg-gray-50 rounded-lg p-4 border-2 border-dashed transition-all duration-300"
+            [class.border-[#d4af37]]="isDragging"
+            [class.border-gray-300]="!isDragging"
+            [class.bg-[#f0d98c]/20]="isDragging"
+            (drop)="onFileDrop($event)"
+            (dragover)="onDragOver($event)"
+            (dragleave)="onDragLeave($event)">
             <div class="flex flex-col items-center gap-3">
-                <div class="flex flex-wrap items-center gap-3 w-full">
-                    <input type="file" accept=".xlsx,.xls,.csv" (change)="onFileSelected($event)" class="flex-1 block text-sm text-gray-500
-                            file:mr-3 file:py-2 file:px-4
-                            file:rounded-lg file:border-0
-                            file:text-sm file:font-semibold
-                            file:bg-orange-500 file:text-white
-                            hover:file:bg-orange-600
-                            file:shadow-md file:shadow-orange-500/20
-                            hover:file:shadow-orange-500/30
-                            transition-all duration-300
-                            cursor-pointer">
-
-                    <!--BOTON GENERAR-->
-                    <button (click)="generateDashboard()" [disabled]="!fileName || isProcessing"
-                        class="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2 whitespace-nowrap">
-                        @if (isProcessing) {
-                        <span
-                            class="animate-spin inline-block h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
-                        Procesando...
-                        } @else {
-                        <span class="material-icons text-sm">auto_awesome</span>
-                        Generar Dashboard
-                        }
-                    </button>
-
-                    <!--BOTON LIMPIAR-->
-                    @if (hasData) {
-                    <button (click)="clearAll()"
-                        class="px-3 py-2 bg-gray-200 text-gray-700 text-sm font-semibold rounded-lg hover:bg-gray-300 transition-colors flex items-center gap-1">
-                        <span class="material-icons text-sm">delete</span>
-                        Limpiar
-                    </button>
-                    }
+                @if (isDragging) {
+                <div class="text-center">
+                    <span class="material-icons text-[#d4af37] text-5xl animate-bounce">cloud_upload</span>
+                    <p class="text-sm font-medium text-[#b8941f] mt-2">¡Suelta el archivo aquí!</p>
                 </div>
+                } @else {
+                <div class="flex flex-col items-center w-full gap-3">
+                    <span class="material-icons text-gray-400 text-4xl">cloud_upload</span>
+                    <p class="text-sm text-gray-600 font-medium">Arrastra tu archivo aquí</p>
+                    <p class="text-xs text-gray-400">o</p>
+
+                    <div class="flex flex-wrap items-center gap-3 w-full">
+                        <input type="file" accept=".xlsx,.xls,.csv" (change)="onFileSelected($event)" class="flex-1 block text-sm text-gray-500
+                                file:mr-3 file:py-2 file:px-4
+                                file:rounded-lg file:border-0
+                                file:text-sm file:font-semibold
+                                file:bg-[#d4af37] file:text-white
+                                hover:file:bg-[#b8941f]
+                                file:shadow-md file:shadow-[#d4af37]/20
+                                hover:file:shadow-[#d4af37]/30
+                                transition-all duration-300
+                                cursor-pointer">
+
+                        <!--BOTON GENERAR-->
+                        <button (click)="generateDashboard()" [disabled]="!fileName || isProcessing"
+                            class="px-4 py-2 bg-[#1a3d3d] text-white text-sm font-semibold rounded-lg hover:bg-[#2a5555] transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2 whitespace-nowrap">
+                            @if (isProcessing) {
+                            <span
+                                class="animate-spin inline-block h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
+                            Procesando...
+                            } @else {
+                            <span class="material-icons text-sm">auto_awesome</span>
+                            Generar Dashboard
+                            }
+                        </button>
+
+                        <!--BOTON LIMPIAR-->
+                        @if (hasData) {
+                        <button (click)="clearAll()"
+                            class="px-3 py-2 bg-gray-200 text-gray-700 text-sm font-semibold rounded-lg hover:bg-gray-300 transition-colors flex items-center gap-1">
+                            <span class="material-icons text-sm">delete</span>
+                            Limpiar
+                        </button>
+                        }
+                    </div>
+                </div>
+                }
 
                 <div class="flex items-center gap-3 text-[10px] text-gray-400">
                     <span class="flex items-center gap-1">
@@ -58,9 +77,9 @@
                         <span class="material-icons text-xs">info</span>
                         Máx 10MB
                     </span>
-                    <span class="flex items-center gap-1 text-blue-500">
-                        <span class="material-icons text-xs">auto_awesome</span>
-                        Selecciona archivo → Generar
+                    <span class="flex items-center gap-1 text-[#1a3d3d]">
+                        <span class="material-icons text-xs">touch_app</span>
+                        Arrastra o selecciona
                     </span>
                 </div>
             </div>
@@ -74,9 +93,20 @@
         }
 
         @if (isProcessing) {
-        <div class="mt-3 flex items-center justify-center gap-2 bg-blue-50 p-2 rounded-lg">
-            <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
-            <span class="text-xs text-blue-600">Procesando archivo y generando dashboard...</span>
+        <div class="mt-3 flex items-center justify-center gap-2 bg-[#1a3d3d]/5 p-2 rounded-lg">
+            <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-[#1a3d3d]"></div>
+            <span class="text-xs text-[#1a3d3d]">Procesando archivo y generando dashboard...</span>
+        </div>
+        }
+
+        @if (pdfProgress) {
+        <div class="mt-3 flex items-center justify-center gap-2 bg-green-50 p-2 rounded-lg border border-green-200">
+            @if (isDownloadingPdf) {
+            <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-green-500"></div>
+            } @else {
+            <span class="material-icons text-green-500 text-sm">check_circle</span>
+            }
+            <span class="text-xs text-green-600">{{ pdfProgress }}</span>
         </div>
         }
     </div>
@@ -84,57 +114,6 @@
     <!--Dashboard (Solo cuando hay datos y se genero)-->
     @if (hasData && chartsGenerated) {
     <div class="space-y-4">
-        <!--Estadisticas rapidas-->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-2">
-                <div class="flex items-center gap-2">
-                    <div class="p-1 bg-blue-100 rounded">
-                        <span class="material-icons text-blue-600 text-sm">table_rows</span>
-                    </div>
-                    <div>
-                        <p class="text-[8px] text-gray-500 uppercase tracking-wider">Registros</p>
-                        <p class="text-sm font-bold text-gray-800">{{ statistics.totalRecords || 0 }}</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-2">
-                <div class="flex items-center gap-2">
-                    <div class="p-1 bg-purple-100 rounded">
-                        <span class="material-icons text-purple-600 text-sm">view_column</span>
-                    </div>
-                    <div>
-                        <p class="text-[8px] text-gray-500 uppercase tracking-wider">Columnas</p>
-                        <p class="text-sm font-bold text-gray-800">{{ statistics.totalColumns || 0 }}</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-2">
-                <div class="flex items-center gap-2">
-                    <div class="p-1 bg-orange-100 rounded">
-                        <span class="material-icons text-orange-600 text-sm">school</span>
-                    </div>
-                    <div>
-                        <p class="text-[8px] text-gray-500 uppercase tracking-wider">Carreras</p>
-                        <p class="text-sm font-bold text-gray-800">{{ careers.length || 0 }}</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-2">
-                <div class="flex items-center gap-2">
-                    <div class="p-1 bg-green-100 rounded">
-                        <span class="material-icons text-green-600 text-sm">filter_alt</span>
-                    </div>
-                    <div>
-                        <p class="text-[8px] text-gray-500 uppercase tracking-wider">Filtrados</p>
-                        <p class="text-sm font-bold text-gray-800">{{ filteredData.length || 0 }}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!--Filtro por carrera -->
         @if (hasCareerColumn) {
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-2">
@@ -157,36 +136,141 @@
         <!--boton para forzar todas las columnas-->
         <div class="mt-2 flex flex-wrap gap-2">
             <button (click)="forceAllCharts()"
-                class="text-[10px] text-blue-500 hover:text-blue-600 font-medium transition-colors px-3 py-1 border border-blue-200 rounded-lg hover:bg-blue-50">
+                class="text-[10px] text-white bg-[#1a3d3d] hover:bg-[#2a5555] font-medium transition-colors px-3 py-1.5 rounded-lg shadow-sm">
                 Forzar todas las columnas
             </button>
-            <span class="text-[9px] text-gray-400 self-center">
+            <span class="text-[9px] text-white self-center bg-[#1a3d3d]/80 px-2 py-1 rounded">
                 {{ categoricalColumns.length }} de {{ columns.length }} columnas graficadas
             </span>
         </div>
 
         <!--Graficos en grid-->
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-3">
-            <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
                 <h3 class="text-xs font-semibold text-gray-700 flex items-center gap-1">
-                    <span class="material-icons text-blue-500 text-sm">insights</span>
+                    <span class="material-icons text-[#1a3d3d] text-sm">insights</span>
                     Resultados de la Encuesta
                 </h3>
-                <span class="text-[9px] text-gray-400">
-                    {{ filteredData.length }} respuestas · {{ categoricalColumns.length }} gráficos
-                </span>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <span class="text-[9px] text-gray-400">
+                        {{ filteredData.length }} respuestas · {{ chartConfigs.length }} gráficos
+                    </span>
+
+                    <!--NUEVO: Botones de Edición-->
+                    <button (click)="toggleEditMode()"
+                        [class.bg-blue-600]="editMode"
+                        [class.bg-gray-600]="!editMode"
+                        class="px-2 py-1 text-white text-[10px] font-semibold rounded hover:opacity-90 transition-all flex items-center gap-1">
+                        <span class="material-icons text-xs">{{ editMode ? 'check' : 'edit' }}</span>
+                        {{ editMode ? 'Listo' : 'Editar' }}
+                    </button>
+
+                    @if (editMode) {
+                    <button (click)="selectAllCharts()"
+                        class="px-2 py-1 bg-green-600 text-white text-[10px] font-semibold rounded hover:bg-green-700 transition-colors flex items-center gap-1">
+                        <span class="material-icons text-xs">select_all</span>
+                        Todos
+                    </button>
+                    <button (click)="deselectAllCharts()"
+                        class="px-2 py-1 bg-yellow-600 text-white text-[10px] font-semibold rounded hover:bg-yellow-700 transition-colors flex items-center gap-1">
+                        <span class="material-icons text-xs">deselect</span>
+                        Ninguno
+                    </button>
+                    <button (click)="removeSelectedCharts()" [disabled]="selectedCharts.size === 0"
+                        class="px-2 py-1 bg-red-600 text-white text-[10px] font-semibold rounded hover:bg-red-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-1">
+                        <span class="material-icons text-xs">delete</span>
+                        Eliminar ({{ selectedCharts.size }})
+                    </button>
+                    }
+
+                    <!--NUEVO: Menú de Exportación-->
+                    <div class="relative inline-block">
+                        <button (click)="showChartEditor = !showChartEditor"
+                            class="px-2 py-1 bg-purple-600 text-white text-[10px] font-semibold rounded hover:bg-purple-700 transition-colors flex items-center gap-1">
+                            <span class="material-icons text-xs">download</span>
+                            Exportar
+                            <span class="material-icons text-xs">{{ showChartEditor ? 'expand_less' : 'expand_more' }}</span>
+                        </button>
+
+                        @if (showChartEditor) {
+                        <div class="absolute right-0 mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
+                            <button (click)="downloadPDF(); showChartEditor = false"
+                                class="w-full text-left px-3 py-2 text-xs hover:bg-gray-50 flex items-center gap-2 border-b border-gray-100">
+                                <span class="material-icons text-sm text-red-600">picture_as_pdf</span>
+                                <span>PDF (con gráficos)</span>
+                            </button>
+                            <button (click)="exportToExcel(); showChartEditor = false"
+                                class="w-full text-left px-3 py-2 text-xs hover:bg-gray-50 flex items-center gap-2 border-b border-gray-100">
+                                <span class="material-icons text-sm text-green-600">table_chart</span>
+                                <span>Excel (datos + estadísticas)</span>
+                            </button>
+                            <button (click)="exportToCSV(); showChartEditor = false"
+                                class="w-full text-left px-3 py-2 text-xs hover:bg-gray-50 flex items-center gap-2 border-b border-gray-100">
+                                <span class="material-icons text-sm text-blue-600">description</span>
+                                <span>CSV (datos)</span>
+                            </button>
+                            <button (click)="exportToJSON(); showChartEditor = false"
+                                class="w-full text-left px-3 py-2 text-xs hover:bg-gray-50 flex items-center gap-2">
+                                <span class="material-icons text-sm text-orange-600">code</span>
+                                <span>JSON (completo)</span>
+                            </button>
+                        </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!--NUEVO: Panel de Configuraciones-->
+            <div class="mb-3 p-2 bg-gray-50 rounded-lg border border-gray-200">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="material-icons text-sm text-gray-600">settings</span>
+                    <span class="text-xs font-semibold text-gray-700">Configuraciones Guardadas</span>
+                </div>
+
+                <div class="flex gap-2 items-center flex-wrap">
+                    <input type="text" [(ngModel)]="currentConfigName" placeholder="Nombre de configuración"
+                        class="flex-1 min-w-[150px] px-2 py-1 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                    <button (click)="saveConfiguration()"
+                        class="px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded hover:bg-blue-700 transition-colors flex items-center gap-1">
+                        <span class="material-icons text-xs">save</span>
+                        Guardar
+                    </button>
+                </div>
+
+                @if (getSavedConfigurations().length > 0) {
+                <div class="mt-2 space-y-1">
+                    @for (config of getSavedConfigurations(); track config.name) {
+                    <div class="flex items-center justify-between bg-white px-2 py-1 rounded border border-gray-200">
+                        <div class="flex-1">
+                            <span class="text-xs font-medium text-gray-700">{{ config.name }}</span>
+                            <span class="text-[9px] text-gray-400 ml-2">{{ config.date | date:'short' }}</span>
+                        </div>
+                        <div class="flex gap-1">
+                            <button (click)="loadConfiguration(config)"
+                                class="px-2 py-0.5 bg-green-500 text-white text-[9px] rounded hover:bg-green-600 transition-colors">
+                                Cargar
+                            </button>
+                            <button (click)="deleteConfiguration(config)"
+                                class="px-2 py-0.5 bg-red-500 text-white text-[9px] rounded hover:bg-red-600 transition-colors">
+                                ×
+                            </button>
+                        </div>
+                    </div>
+                    }
+                </div>
+                }
             </div>
 
             <!--Contenedor de graficos-->
             <div #chartContainer class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-                <!--Los graficos se generan aqui-->
+                <!--Los graficos se generan dinámicamente con JavaScript-->
             </div>
 
             <!--Boton "Cargar mas graficos"-->
             @if (categoricalColumns.length > visibleCharts) {
             <div class="mt-2 text-center">
                 <button (click)="loadMoreCharts()"
-                    class="text-[10px] text-orange-500 hover:text-orange-600 font-medium transition-colors px-3 py-1 border border-orange-200 rounded-lg hover:bg-orange-50">
+                    class="text-[10px] text-[#d4af37] hover:text-[#b8941f] font-medium transition-colors px-3 py-1 border border-[#d4af37]/20 rounded-lg hover:bg-[#d4af37]/5">
                     Cargar más gráficos ({{ categoricalColumns.length - visibleCharts }} restantes)
                 </button>
             </div>
@@ -208,6 +292,31 @@
 
         <!--Tabla de datos-->
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <!--Barra de búsqueda-->
+            <div class="p-3 bg-gray-50 border-b border-gray-200">
+                <div class="flex items-center gap-2">
+                    <div class="flex-1 relative">
+                        <span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">search</span>
+                        <input
+                            type="text"
+                            [(ngModel)]="searchTerm"
+                            (input)="onSearchChange()"
+                            placeholder="Buscar en la tabla..."
+                            class="w-full pl-10 pr-10 py-2 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                        @if (searchTerm) {
+                        <button
+                            (click)="clearSearch()"
+                            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                            <span class="material-icons text-sm">close</span>
+                        </button>
+                        }
+                    </div>
+                    <div class="text-xs text-gray-500 whitespace-nowrap">
+                        {{ getFilteredTableData().length }} resultado(s)
+                    </div>
+                </div>
+            </div>
+
             <div class="overflow-x-auto" style="max-height: 300px; overflow-y: auto;">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50 sticky top-0 z-10">
@@ -224,15 +333,22 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        @if (filteredData.length === 0) {
+                        @if (getFilteredTableData().length === 0) {
                         <tr>
                             <td [attr.colspan]="columns.length + 1" class="px-2 py-4 text-center text-gray-400 text-xs">
-                                No hay datos para mostrar
+                                @if (searchTerm) {
+                                <div class="flex flex-col items-center gap-2">
+                                    <span class="material-icons text-gray-300 text-2xl">search_off</span>
+                                    <span>No se encontraron resultados para "{{ searchTerm }}"</span>
+                                </div>
+                                } @else {
+                                <span>No hay datos para mostrar</span>
+                                }
                             </td>
                         </tr>
                         }
 
-                        @for (row of filteredData | slice:0:visibleRows; track $index) {
+                        @for (row of getFilteredTableData() | slice:0:visibleRows; track $index) {
                         <tr class="hover:bg-gray-50 transition-colors">
                             <td class="px-2 py-1.5 whitespace-nowrap text-[10px] text-gray-500">{{ $index + 1 }}</td>
                             @for (col of columns; track col) {
@@ -245,11 +361,11 @@
                     </tbody>
                 </table>
 
-                @if (filteredData.length > visibleRows) {
+                @if (getFilteredTableData().length > visibleRows) {
                 <div class="bg-gray-50 px-2 py-1.5 border-t border-gray-200 text-center">
                     <button (click)="loadMoreRows()"
-                        class="text-[10px] text-orange-500 hover:text-orange-600 font-medium transition-colors">
-                        Cargar más registros ({{ filteredData.length - visibleRows }} restantes)
+                        class="text-[10px] text-[#d4af37] hover:text-[#b8941f] font-medium transition-colors">
+                        Cargar más registros ({{ getFilteredTableData().length - visibleRows }} restantes)
                     </button>
                 </div>
                 }
@@ -257,7 +373,7 @@
 
             <div class="bg-gray-50 px-2 py-1.5 border-t border-gray-200 flex items-center justify-between text-[9px]">
                 <span class="text-gray-500">
-                    Mostrando <strong>{{ visibleRows }}</strong> de <strong>{{ filteredData.length }}</strong>
+                    Mostrando <strong>{{ visibleRows }}</strong> de <strong>{{ getFilteredTableData().length }}</strong>
                 </span>
                 <span class="text-gray-400">
                     Total: <strong>{{ excelData.length }}</strong>
@@ -279,7 +395,7 @@
         <div class="flex flex-wrap gap-1 mt-1">
             @for (col of columns; track col) {
             <span
-                class="px-1.5 py-0.5 rounded bg-white border border-gray-200 
+                class="px-1.5 py-0.5 rounded bg-white border border-gray-200
         {{ categoricalColumns.includes(col) ? 'text-green-600 border-green-200' : 'text-gray-400 border-gray-200' }}">
                 {{ col }}
                 {{ categoricalColumns.includes(col) ? '✅' : '⏭️' }}

@@ -1,0 +1,439 @@
+/* ====================================================
+   EFECTOS AVANZADOS Y UTILIDADES PARA HOME
+   ==================================================== */
+
+/* ====== EFECTOS DE PARTÍCULAS ====== */
+.particle-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.particle {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.1), transparent);
+    animation: float 20s infinite ease-in-out;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0) translateX(0) scale(1);
+        opacity: 0.1;
+    }
+    50% {
+        transform: translateY(-100px) translateX(50px) scale(1.2);
+        opacity: 0.3;
+    }
+}
+
+/* ====== EFECTOS DE NEON ====== */
+.neon-text {
+    text-shadow:
+        0 0 5px rgba(212, 175, 55, 0.5),
+        0 0 10px rgba(212, 175, 55, 0.3),
+        0 0 20px rgba(212, 175, 55, 0.2);
+}
+
+.neon-border {
+    box-shadow:
+        0 0 5px rgba(212, 175, 55, 0.3),
+        0 0 10px rgba(212, 175, 55, 0.2),
+        inset 0 0 10px rgba(212, 175, 55, 0.1);
+    border: 1px solid rgba(212, 175, 55, 0.5);
+}
+
+/* ====== EFECTOS DE HOVER CREATIVOS ====== */
+.hover-lift {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.2);
+}
+
+.hover-glow:hover {
+    box-shadow:
+        0 0 20px rgba(212, 175, 55, 0.4),
+        0 0 40px rgba(212, 175, 55, 0.2);
+}
+
+.hover-rotate {
+    transition: transform 0.5s ease;
+}
+
+.hover-rotate:hover {
+    transform: rotate(5deg) scale(1.05);
+}
+
+/* ====== EFECTOS DE BORDE ANIMADO ====== */
+.animated-border {
+    position: relative;
+    background: white;
+}
+
+.animated-border::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(
+        45deg,
+        #d4af37,
+        #1a3d3d,
+        #d4af37
+    );
+    border-radius: inherit;
+    background-size: 300% 300%;
+    animation: borderAnimation 3s ease infinite;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.animated-border:hover::before {
+    opacity: 1;
+}
+
+@keyframes borderAnimation {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+/* ====== EFECTOS DE ONDA ====== */
+.ripple {
+    position: relative;
+    overflow: hidden;
+}
+
+.ripple::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.ripple:active::after {
+    width: 300px;
+    height: 300px;
+}
+
+/* ====== EFECTOS DE CRISTAL ====== */
+.frosted-glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow:
+        0 8px 32px 0 rgba(31, 38, 135, 0.1),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.frosted-glass-dark {
+    background: rgba(26, 61, 61, 0.2);
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(26, 61, 61, 0.3);
+}
+
+/* ====== EFECTOS DE SOMBRA DINÁMICA ====== */
+.shadow-dynamic {
+    transition: box-shadow 0.3s ease;
+}
+
+.shadow-dynamic:hover {
+    box-shadow:
+        0 2px 4px rgba(0, 0, 0, 0.05),
+        0 4px 8px rgba(0, 0, 0, 0.05),
+        0 8px 16px rgba(0, 0, 0, 0.05),
+        0 16px 32px rgba(0, 0, 0, 0.05);
+}
+
+/* ====== GRADIENTES ANIMADOS ====== */
+.gradient-shift {
+    background: linear-gradient(
+        -45deg,
+        #d4af37,
+        #e5c155,
+        #1a3d3d,
+        #2a5555
+    );
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+}
+
+/* ====== EFECTOS DE TYPING ====== */
+.typing-effect {
+    overflow: hidden;
+    border-right: 2px solid #d4af37;
+    white-space: nowrap;
+    animation:
+        typing 3.5s steps(40, end),
+        blink-caret 0.75s step-end infinite;
+}
+
+@keyframes typing {
+    from { width: 0; }
+    to { width: 100%; }
+}
+
+@keyframes blink-caret {
+    from, to { border-color: transparent; }
+    50% { border-color: #d4af37; }
+}
+
+/* ====== EFECTOS DE CONTADOR ANIMADO ====== */
+.counter-animation {
+    animation: countUp 2s ease-out;
+}
+
+@keyframes countUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ====== EFECTOS DE PROGRESS BAR ====== */
+.progress-bar {
+    position: relative;
+    height: 4px;
+    background: #e5e7eb;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progress-bar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: linear-gradient(90deg, #d4af37, #e5c155);
+    animation: progress 2s ease-out;
+}
+
+@keyframes progress {
+    from { width: 0%; }
+    to { width: 100%; }
+}
+
+/* ====== EFECTOS DE CARD FLIP ====== */
+.card-flip {
+    perspective: 1000px;
+}
+
+.card-flip-inner {
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+
+.card-flip:hover .card-flip-inner {
+    transform: rotateY(180deg);
+}
+
+.card-flip-front,
+.card-flip-back {
+    backface-visibility: hidden;
+}
+
+.card-flip-back {
+    transform: rotateY(180deg);
+}
+
+/* ====== EFECTOS DE PARALLAX ====== */
+.parallax {
+    transition: transform 0.3s ease-out;
+}
+
+.parallax:hover {
+    transform: translateZ(20px);
+}
+
+/* ====== EFECTOS DE MÁSCARA DE COLOR ====== */
+.color-overlay {
+    position: relative;
+}
+
+.color-overlay::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        135deg,
+        rgba(212, 175, 55, 0.1),
+        rgba(26, 61, 61, 0.1)
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.color-overlay:hover::after {
+    opacity: 1;
+}
+
+/* ====== EFECTOS DE BRILLO SUTIL ====== */
+.subtle-shine {
+    position: relative;
+    overflow: hidden;
+}
+
+.subtle-shine::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.1) 50%,
+        transparent 70%
+    );
+    transform: rotate(45deg);
+    animation: shine 3s infinite;
+}
+
+@keyframes shine {
+    0% {
+        transform: translateX(-100%) rotate(45deg);
+    }
+    100% {
+        transform: translateX(100%) rotate(45deg);
+    }
+}
+
+/* ====== EFECTOS DE BADGE ANIMADO ====== */
+.badge-pulse {
+    position: relative;
+}
+
+.badge-pulse::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: inherit;
+    background: inherit;
+    animation: badge-pulse-animation 2s infinite;
+}
+
+@keyframes badge-pulse-animation {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* ====== EFECTOS DE SKELETON MEJORADO ====== */
+.skeleton-pulse {
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* ====== EFECTOS DE ZOOM HOVER ====== */
+.zoom-hover {
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.zoom-hover:hover img {
+    transform: scale(1.1);
+}
+
+/* ====== EFECTOS DE UNDERLINE ANIMADO ====== */
+.animated-underline {
+    position: relative;
+    display: inline-block;
+}
+
+.animated-underline::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #d4af37, #1a3d3d);
+    transition: width 0.3s ease;
+}
+
+.animated-underline:hover::after {
+    width: 100%;
+}
+
+/* ====== MEJORAS DE ACCESIBILIDAD ====== */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* ====== UTILIDADES DE ESPACIADO ====== */
+.space-y-2 > * + * { margin-top: 0.5rem; }
+.space-y-3 > * + * { margin-top: 0.75rem; }
+.space-y-4 > * + * { margin-top: 1rem; }
+.space-y-6 > * + * { margin-top: 1.5rem; }
+.space-y-8 > * + * { margin-top: 2rem; }
+
+.space-x-2 > * + * { margin-left: 0.5rem; }
+.space-x-3 > * + * { margin-left: 0.75rem; }
+.space-x-4 > * + * { margin-left: 1rem; }
+
+/* ====== MEDIA QUERIES AVANZADAS ====== */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    /* Preparado para modo oscuro futuro */
+    :root {
+        --bg-color: #1a1a1a;
+        --text-color: #ffffff;
+    }
+}

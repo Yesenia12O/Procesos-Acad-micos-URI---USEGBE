@@ -1,0 +1,22 @@
+# Configuración de Netlify para Dashboard USEGBE
+[build]
+  # Comando para construir el proyecto
+  command = "npm run build"
+
+  # Directorio con los archivos a publicar
+  publish = "dist/dashboards-USEGBE/browser"
+
+# Configuración de redirecciones para Angular (SPA)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Headers de seguridad
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "no-referrer-when-downgrade"

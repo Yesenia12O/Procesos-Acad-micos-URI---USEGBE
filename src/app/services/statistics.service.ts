@@ -12,10 +12,10 @@ export class StatisticsService {
       console.warn('⚠️ No hay datos para analizar');
       return [];
     }
-    
+
     const columns = Object.keys(data[0]);
     const categoricalColumns: string[] = [];
-    
+
     //PALABRAS CLAVE para detectar columnas de encuestas/requisitos
     const surveyKeywords = [
       //Requisitos/Estado
@@ -38,37 +38,37 @@ export class StatisticsService {
       'conocimiento', 'experiencia', 'tiempo', 'dedicacion',
       'dedicación', 'nivel_estudio', 'nivel_educativo'
     ];
-    
+
     //Lista negra: columnas que NO deben graficarse
     const blacklist = [
       'id', 'cedula', 'cédula', 'identificacion', 'identificación',
       'codigo', 'código', 'numero', 'número', 'correo', 'email',
       'telefono', 'teléfono', 'direccion', 'dirección',
       'fecha_nacimiento', 'fecha_creacion', 'fecha_actualizacion',
-      'nombre_completo', 'apellidos', 'nombres', 'usuario',
+      'nombre_completo', 'apellidos', 'nombres', 'nombre', 'apellido', 'usuario',
       'carrera', 'carreras', 'programa', 'facultad' //Excluir carreras (ya tenemos filtro)
     ];
-    
+
     for (const col of columns) {
       const lowerCol = col.toLowerCase().trim();
-      
+
       //Saltar columnas de la lista negra
       if (blacklist.some(keyword => lowerCol.includes(keyword))) {
         console.log(`⏭️ Columna ignorada (blacklist): ${col}`);
         continue;
       }
-      
+
       //1. SIEMPRE incluir columnas que contengan palabras clave
       if (surveyKeywords.some(keyword => lowerCol.includes(keyword))) {
         categoricalColumns.push(col);
         console.log(`✅ Columna por keyword: ${col}`);
         continue;
       }
-      
+
       //2. Analizar valores unicos
       const uniqueValues = new Set<string>();
       let totalValues = 0;
-      
+
       for (const row of data) {
         const value = row[col];
         if (value !== undefined && value !== null && value !== '') {
@@ -79,9 +79,9 @@ export class StatisticsService {
         // Si ya tenemos suficientes valores, salir
         if (uniqueValues.size > 20) break;
       }
-      
+
       const uniqueCount = uniqueValues.size;
-      
+
       //3. Si tiene entre 2 y 20 valores unicos, ES CATEGORICA
       if (uniqueCount >= 2 && uniqueCount <= 20) {
         categoricalColumns.push(col);
@@ -89,7 +89,7 @@ export class StatisticsService {
         console.log(`   Valores: ${Array.from(uniqueValues).join(', ')}`);
         continue;
       }
-      
+
       //4. Si tiene exactamente 2 valores (CUMPLE/NO CUMPLE), FORZAR
       if (uniqueCount === 2) {
         categoricalColumns.push(col);
@@ -97,7 +97,7 @@ export class StatisticsService {
         console.log(`   Valores: ${Array.from(uniqueValues).join(', ')}`);
         continue;
       }
-      
+
       //5. Si tiene entre 21 y 50 valores, pero es texto, incluir igual
       if (uniqueCount > 20 && uniqueCount <= 50) {
         // Verificar si es texto (no numérico)
@@ -106,17 +106,17 @@ export class StatisticsService {
           const val = row[col];
           return val !== undefined && val !== null && val !== '' && isNaN(Number(val));
         });
-        
+
         if (isText) {
           categoricalColumns.push(col);
           console.log(`📝 Columna de texto (${uniqueCount} valores): ${col}`);
         }
       }
     }
-    
+
     console.log(`📊 Total columnas detectadas: ${categoricalColumns.length}`);
     console.log('📊 Columnas:', categoricalColumns);
-    
+
     return categoricalColumns;
   }
 
@@ -127,16 +127,16 @@ export class StatisticsService {
     if (!column || !data || data.length === 0) {
       return { labels: ['Sin datos'], data: [0], percentages: ['0%'], total: 0 };
     }
-    
+
     const dist: Record<string, number> = {};
     data.forEach(row => {
       const value = String(row[column] || 'Sin especificar').trim();
       dist[value] = (dist[value] || 0) + 1;
     });
-    
+
     const total = data.length;
     const sorted = Object.entries(dist).sort((a, b) => b[1] - a[1]);
-    
+
     return {
       labels: sorted.map(i => i[0]),
       data: sorted.map(i => i[1]),
@@ -150,10 +150,10 @@ export class StatisticsService {
    */
   getPieData(data: any[], column: string, maxItems: number = 6): any {
     if (!column || !data || data.length === 0) {
-      return { 
-        labels: ['Sin datos'], 
-        data: [0], 
-        percentages: ['0%'], 
+      return {
+        labels: ['Sin datos'],
+        data: [0],
+        percentages: ['0%'],
         total: 0,
         datasets: [{
           data: [0],
@@ -163,12 +163,12 @@ export class StatisticsService {
         }]
       };
     }
-    
+
     const dist = this.getDistribution(data, column);
     let labels = dist.labels.slice(0, maxItems);
     let values = dist.data.slice(0, maxItems);
     let percentages = dist.percentages.slice(0, maxItems);
-    
+
     //Agrupar "Otros" si hay mas de maxItems
     if (dist.labels.length > maxItems) {
       const otherCount = dist.data.slice(maxItems).reduce((a: any, b: any) => a + b, 0);
@@ -177,14 +177,41 @@ export class StatisticsService {
       values.push(otherCount);
       percentages.push(otherPercent);
     }
-    
+
+    // Paleta de colores vibrantes y variados con intercalación óptima
     const colors = [
-      'rgba(251,146,60,0.8)', 'rgba(59,130,246,0.8)', 'rgba(52,211,153,0.8)',
-      'rgba(251,191,36,0.8)', 'rgba(244,63,94,0.8)', 'rgba(139,92,246,0.8)',
-      'rgba(236,72,153,0.8)', 'rgba(16,185,129,0.8)', 'rgba(245,158,11,0.8)',
-      'rgba(99,102,241,0.8)'
+      'rgba(59,130,246,0.85)',    // Azul brillante
+      'rgba(239,68,68,0.85)',     // Rojo coral
+      'rgba(212,175,55,0.85)',    // Dorado ITSQMET
+      'rgba(139,92,246,0.85)',    // Púrpura
+      'rgba(16,185,129,0.85)',    // Esmeralda
+      'rgba(236,72,153,0.85)',    // Rosa vibrante
+      'rgba(249,115,22,0.85)',    // Naranja
+      'rgba(20,184,166,0.85)',    // Turquesa
+      'rgba(168,85,247,0.85)',    // Violeta
+      'rgba(34,197,94,0.85)',     // Verde lima brillante
+      'rgba(14,165,233,0.85)',    // Cyan cielo
+      'rgba(251,146,60,0.85)',    // Naranja suave
+      'rgba(244,63,94,0.85)',     // Rosa fuerte
+      'rgba(251,191,36,0.85)',    // Ámbar
+      'rgba(99,102,241,0.85)',    // Índigo
+      'rgba(45,212,191,0.85)',    // Teal brillante
+      'rgba(245,158,11,0.85)',    // Amarillo dorado
+      'rgba(219,39,119,0.85)',    // Magenta
+      'rgba(6,182,212,0.85)',     // Cyan vibrante
+      'rgba(132,204,22,0.85)',    // Verde lima claro
+      'rgba(192,38,211,0.85)',    // Fucsia
+      'rgba(234,179,8,0.85)',     // Amarillo brillante
+      'rgba(37,99,235,0.85)',     // Azul rey
+      'rgba(220,38,38,0.85)',     // Rojo intenso
+      'rgba(126,34,206,0.85)',    // Morado oscuro
+      'rgba(5,150,105,0.85)',     // Verde esmeralda oscuro
+      'rgba(217,70,239,0.85)',    // Púrpura neón
+      'rgba(234,88,12,0.85)',     // Naranja quemado
+      'rgba(8,145,178,0.85)',     // Azul petróleo
+      'rgba(190,18,60,0.85)'      // Rosa oscuro
     ];
-    
+
     return {
       labels: labels,
       data: values,
@@ -199,14 +226,104 @@ export class StatisticsService {
     };
   }
 
+  /**
+   * Detecta columnas numéricas para histogramas
+   */
   getNumericColumns(data: any[]): string[] {
     if (!data || data.length === 0) return [];
+
+    const blacklist = ['id', 'cedula', 'cédula', 'identificacion', 'codigo', 'código'];
+
     return Object.keys(data[0]).filter(col => {
-      const sample = data.slice(0, 10);
-      return sample.every(row => {
+      const lowerCol = col.toLowerCase();
+
+      // Saltar columnas de la blacklist
+      if (blacklist.some(keyword => lowerCol.includes(keyword))) {
+        return false;
+      }
+
+      // Verificar que al menos el 80% de los valores sean numéricos
+      let numericCount = 0;
+      let totalCount = 0;
+
+      for (const row of data) {
         const val = row[col];
-        return val === undefined || val === null || !isNaN(Number(val));
-      });
+        if (val !== undefined && val !== null && val !== '') {
+          totalCount++;
+          if (!isNaN(Number(val)) && String(val).trim() !== '') {
+            numericCount++;
+          }
+        }
+      }
+
+      // Si más del 80% son numéricos y tiene valores variados
+      if (totalCount > 0 && (numericCount / totalCount) >= 0.8) {
+        // Verificar que tenga al menos 5 valores diferentes
+        const uniqueValues = new Set<number>();
+        for (const row of data) {
+          const val = row[col];
+          if (!isNaN(Number(val)) && val !== null && val !== undefined && val !== '') {
+            uniqueValues.add(Number(val));
+          }
+        }
+        return uniqueValues.size >= 5;
+      }
+
+      return false;
     });
+  }
+
+  /**
+   * Genera datos para histograma (columnas numéricas)
+   */
+  getHistogramData(data: any[], column: string, bins: number = 10): any {
+    if (!data || data.length === 0 || !column) {
+      return null;
+    }
+
+    // Extraer valores numéricos
+    const values: number[] = [];
+    data.forEach(row => {
+      const val = Number(row[column]);
+      if (!isNaN(val) && val !== null && val !== undefined) {
+        values.push(val);
+      }
+    });
+
+    if (values.length === 0) return null;
+
+    // Calcular rango
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    const range = max - min;
+    const binSize = range / bins;
+
+    // Crear bins
+    const histogram: Record<string, number> = {};
+    const labels: string[] = [];
+
+    for (let i = 0; i < bins; i++) {
+      const binStart = min + (i * binSize);
+      const binEnd = binStart + binSize;
+      const label = `${binStart.toFixed(1)}-${binEnd.toFixed(1)}`;
+      labels.push(label);
+      histogram[label] = 0;
+    }
+
+    // Contar valores en cada bin
+    values.forEach(val => {
+      const binIndex = Math.min(Math.floor((val - min) / binSize), bins - 1);
+      const label = labels[binIndex];
+      histogram[label]++;
+    });
+
+    return {
+      labels: labels,
+      data: Object.values(histogram),
+      min: min.toFixed(2),
+      max: max.toFixed(2),
+      avg: (values.reduce((a, b) => a + b, 0) / values.length).toFixed(2),
+      total: values.length
+    };
   }
 }

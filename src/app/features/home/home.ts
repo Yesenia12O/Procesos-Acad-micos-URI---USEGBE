@@ -46,10 +46,6 @@ export class Home implements OnInit, AfterViewInit {
   editMode: boolean = false; // Modo de edición activado
   showChartEditor: boolean = false; // Mostrar panel de edición
 
-  //Configuraciones personalizadas
-  savedConfigurations: any[] = []; // Configuraciones guardadas
-  currentConfigName: string = ''; // Nombre de configuración actual
-
   //🆕 PANEL DE FILTROS AVANZADO
   showFilterPanel: boolean = false; // Mostrar/ocultar panel
   availableFilters: { column: string; values: string[]; selectedValues: Set<string> }[] = []; // Filtros disponibles
@@ -82,8 +78,6 @@ export class Home implements OnInit, AfterViewInit {
   ) { }
 
   ngOnInit(): void {
-    // Cargar configuraciones guardadas
-    this.savedConfigurations = this.getSavedConfigurations();
   }
   ngAfterViewInit(): void { }
 
@@ -1090,60 +1084,6 @@ forceAllCharts(): void {
         }
       });
     }
-  }
-
-  //========== GUARDAR/CARGAR CONFIGURACIONES ==========
-  saveConfiguration(): void {
-    if (!this.currentConfigName || this.currentConfigName.trim() === '') {
-      alert('Por favor, ingresa un nombre para la configuración');
-      return;
-    }
-
-    const config = {
-      name: this.currentConfigName,
-      date: new Date().toISOString(),
-      selectedCareer: this.selectedCareer,
-      categoricalColumns: [...this.categoricalColumns],
-      numericColumns: [...this.numericColumns],
-      visibleCharts: this.visibleCharts
-    };
-
-    // Guardar en localStorage
-    const configs = this.getSavedConfigurations();
-    configs.push(config);
-    localStorage.setItem('dashboardConfigs', JSON.stringify(configs));
-
-    this.savedConfigurations = configs;
-    alert(`Configuración "${this.currentConfigName}" guardada exitosamente`);
-    this.currentConfigName = '';
-  }
-
-  getSavedConfigurations(): any[] {
-    const saved = localStorage.getItem('dashboardConfigs');
-    return saved ? JSON.parse(saved) : [];
-  }
-
-  loadConfiguration(config: any): void {
-    this.selectedCareer = config.selectedCareer;
-    this.categoricalColumns = config.categoricalColumns;
-    this.numericColumns = config.numericColumns;
-    this.visibleCharts = config.visibleCharts;
-
-    this.filterByCareer();
-    this.generateCharts();
-
-    alert(`Configuración "${config.name}" cargada`);
-  }
-
-  deleteConfiguration(config: any): void {
-    if (!confirm(`¿Eliminar configuración "${config.name}"?`)) {
-      return;
-    }
-
-    const configs = this.getSavedConfigurations();
-    const filtered = configs.filter(c => c.name !== config.name);
-    localStorage.setItem('dashboardConfigs', JSON.stringify(filtered));
-    this.savedConfigurations = filtered;
   }
 
   //========== EXPORTAR A DIFERENTES FORMATOS ==========

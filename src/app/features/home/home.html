@@ -284,47 +284,6 @@
                 </div>
             </div>
 
-            <!--NUEVO: Panel de Configuraciones-->
-            <div class="mb-3 p-2 bg-gray-50 rounded-lg border border-gray-200">
-                <div class="flex items-center gap-2 mb-2">
-                    <span class="material-icons text-sm text-gray-600">settings</span>
-                    <span class="text-xs font-semibold text-gray-700">Configuraciones Guardadas</span>
-                </div>
-
-                <div class="flex gap-2 items-center flex-wrap">
-                    <input type="text" [(ngModel)]="currentConfigName" placeholder="Nombre de configuración"
-                        class="flex-1 min-w-[150px] px-2 py-1 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
-                    <button (click)="saveConfiguration()"
-                        class="px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded hover:bg-blue-700 transition-colors flex items-center gap-1">
-                        <span class="material-icons text-xs">save</span>
-                        Guardar
-                    </button>
-                </div>
-
-                @if (getSavedConfigurations().length > 0) {
-                <div class="mt-2 space-y-1">
-                    @for (config of getSavedConfigurations(); track config.name) {
-                    <div class="flex items-center justify-between bg-white px-2 py-1 rounded border border-gray-200">
-                        <div class="flex-1">
-                            <span class="text-xs font-medium text-gray-700">{{ config.name }}</span>
-                            <span class="text-[9px] text-gray-400 ml-2">{{ config.date | date:'short' }}</span>
-                        </div>
-                        <div class="flex gap-1">
-                            <button (click)="loadConfiguration(config)"
-                                class="px-2 py-0.5 bg-green-500 text-white text-[9px] rounded hover:bg-green-600 transition-colors">
-                                Cargar
-                            </button>
-                            <button (click)="deleteConfiguration(config)"
-                                class="px-2 py-0.5 bg-red-500 text-white text-[9px] rounded hover:bg-red-600 transition-colors">
-                                ×
-                            </button>
-                        </div>
-                    </div>
-                    }
-                </div>
-                }
-            </div>
-
             <!--Contenedor de graficos-->
             <div #chartContainer class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                 <!--Los graficos se generan dinámicamente con JavaScript-->

@@ -50,6 +50,10 @@ export class Home implements OnInit, AfterViewInit {
   savedConfigurations: any[] = []; // Configuraciones guardadas
   currentConfigName: string = ''; // Nombre de configuración actual
 
+  //🆕 PANEL DE FILTROS AVANZADO
+  showFilterPanel: boolean = false; // Mostrar/ocultar panel
+  availableFilters: { column: string; values: string[]; selectedValues: Set<string> }[] = []; // Filtros disponibles
+
   //Estados
   isLoading: boolean = false;
   isProcessing: boolean = false;
@@ -267,6 +271,8 @@ forceAllCharts(): void {
       this.visibleRows = Math.min(50, this.filteredData.length);
       this.visibleCharts = Math.min(6, this.categoricalColumns.length);
 
+      // Inicializar panel de filtros
+      this.initializeFilterPanel();
 
       resolve();
     });
@@ -1243,5 +1249,144 @@ forceAllCharts(): void {
       console.error('❌ Error exportando JSON:', error);
       this.errorMessage = 'Error al exportar a JSON';
     }
+  }
+
+  //========== 🆕 PANEL DE FILTROS AVANZADO ==========
+
+  /**
+   * Inicializar filtros disponibles después de cargar datos
+   */
+  initializeFilterPanel(): void {
+    this.availableFilters = [];
+
+    // Crear filtros para cada columna categórica
+    this.categoricalColumns.forEach(column => {
+      const uniqueValues = [...new Set(this.excelData.map(row => row[column]))]
+        .filter(val => val !== null && val !== undefined && String(val).trim() !== '')
+        .map(val => String(val))
+        .sort();
+
+      if (uniqueValues.length > 0 && uniqueValues.length <= 50) { // Máximo 50 valores por filtro
+        this.availableFilters.push({
+          column,
+          values: uniqueValues,
+          selectedValues: new Set<string>()
+        });
+      }
+    });
+
+    console.log('🔧 Filtros inicializados:', this.availableFilters.length);
+  }
+
+  /**
+   * Toggle panel de filtros
+   */
+  toggleFilterPanel(): void {
+    this.showFilterPanel = !this.showFilterPanel;
+    if (this.showFilterPanel && this.availableFilters.length === 0) {
+      this.initializeFilterPanel();
+    }
+  }
+
+  /**
+   * Toggle selección de un valor en un filtro
+   */
+  toggleFilterValue(filter: any, value: string): void {
+    if (filter.selectedValues.has(value)) {
+      filter.selectedValues.delete(value);
+    } else {
+      filter.selectedValues.add(value);
+    }
+  }
+
+  /**
+   * Seleccionar todos los valores de un filtro
+   */
+  selectAllFilterValues(filter: any): void {
+    filter.selectedValues.clear();
+    filter.values.forEach((v: string) => filter.selectedValues.add(v));
+  }
+
+  /**
+   * Deseleccionar todos los valores de un filtro
+   */
+  clearFilterValues(filter: any): void {
+    filter.selectedValues.clear();
+  }
+
+  /**
+   * Aplicar todos los filtros seleccionados
+   */
+  applyFilters(): void {
+    let dataToFilter = this.excelData;
+
+    // Aplicar filtro de carrera si existe
+    if (this.careerColumn && this.selectedCareer !== 'Todas') {
+      dataToFilter = dataToFilter.filter(row =>
+        row[this.careerColumn!] === this.selectedCareer
+      );
+    }
+
+    // Aplicar filtros del panel
+    this.availableFilters.forEach(filter => {
+      if (filter.selectedValues.size > 0) {
+        dataToFilter = dataToFilter.filter(row => {
+          const rowValue = row[filter.column];
+          return rowValue !== null && rowValue !== undefined &&
+                 filter.selectedValues.has(String(rowValue));
+        });
+      }
+    });
+
+    this.filteredData = dataToFilter;
+    this.visibleRows = Math.min(50, this.filteredData.length);
+
+    // Regenerar gráficos
+    this.generateCharts();
+    this.cdr.detectChanges();
+
+    console.log(`📊 Filtros aplicados: ${this.filteredData.length} de ${this.excelData.length} registros`);
+  }
+
+  /**
+   * Limpiar todos los filtros del panel
+   */
+  clearAllPanelFilters(): void {
+    this.availableFilters.forEach(filter => filter.selectedValues.clear());
+
+    // Restaurar datos
+    if (this.careerColumn && this.selectedCareer !== 'Todas') {
+      this.filteredData = this.excelService.filterByCareer(
+        this.excelData,
+        this.careerColumn,
+        this.selectedCareer
+      );
+    } else {
+      this.filteredData = this.excelData;
+    }
+
+    this.visibleRows = Math.min(50, this.filteredData.length);
+
+    // Regenerar gráficos
+    this.generateCharts();
+    this.cdr.detectChanges();
+
+    console.log('🧹 Filtros del panel limpiados');
+  }
+
+  /**
+   * Contar filtros activos
+   */
+  getActiveFiltersCount(): number {
+    return this.availableFilters.reduce((count, filter) =>
+      count + filter.selectedValues.size, 0
+    );
+  }
+
+  /**
+   * Verificar si hay filtros activos
+   */
+  hasActiveFilters(): boolean {
+    return this.getActiveFiltersCount() > 0;
   }
 }

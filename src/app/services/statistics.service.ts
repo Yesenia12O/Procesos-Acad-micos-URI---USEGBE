@@ -232,7 +232,11 @@ export class StatisticsService {
   getNumericColumns(data: any[]): string[] {
     if (!data || data.length === 0) return [];
 
-    const blacklist = ['id', 'cedula', 'cédula', 'identificacion', 'codigo', 'código'];
+    const blacklist = [
+      'id', 'cedula', 'cédula', 'identificacion', 'codigo', 'código',
+      'celular', 'telefono', 'teléfono', 'movil', 'móvil', 'phone',
+      'correo', 'email', 'mail'
+    ];
 
     return Object.keys(data[0]).filter(col => {
       const lowerCol = col.toLowerCase();

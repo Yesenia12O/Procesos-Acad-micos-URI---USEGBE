@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Chart, registerables } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import * as XLSX from 'xlsx';
+import html2canvas from 'html2canvas';
 import { ExcelService } from '../../services/excel-service';
 import { StatisticsService } from '../../services/statistics.service';
 import { PdfService } from '../../services/pdf-service';
@@ -1086,15 +1087,37 @@ forceAllCharts(): void {
     }
   }
 
-  //========== EXPORTAR A WORD ==========
+  //========== EXPORTAR A WORD CON GRÁFICOS ==========
   async exportToWord(): Promise<void> {
-    if (!this.hasData) {
-      this.errorMessage = 'No hay datos para exportar';
+    if (!this.chartContainer || !this.hasData || !this.chartsGenerated) {
+      this.errorMessage = 'No hay gráficos para exportar. Genera el dashboard primero.';
       return;
     }
 
     try {
-      // Crear contenido HTML para el documento Word
+      console.log('📄 Iniciando exportación a Word con gráficos...');
+
+      // Pequeño delay para asegurar que los gráficos estén renderizados
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // Capturar todos los gráficos como imágenes
+      const chartElements = this.chartContainer.nativeElement.querySelectorAll('.chart-item');
+      const chartImages: string[] = [];
+
+      for (const chartEl of Array.from(chartElements)) {
+        try {
+          const canvas = await html2canvas(chartEl as HTMLElement, {
+            scale: 2,
+            backgroundColor: '#ffffff',
+            logging: false
+          });
+          chartImages.push(canvas.toDataURL('image/png'));
+        } catch (error) {
+          console.warn('⚠️ Error capturando gráfico:', error);
+        }
+      }
+
+      // Crear contenido HTML para Word con los gráficos como imágenes
       let htmlContent = `
         <html xmlns:o='urn:schemas-microsoft-com:office:office'
               xmlns:w='urn:schemas-microsoft-com:office:word'
@@ -1103,87 +1126,128 @@ forceAllCharts(): void {
           <meta charset='utf-8'>
           <title>Informe USEGBE</title>
           <style>
-            body { font-family: Arial, sans-serif; margin: 40px; }
-            h1 { color: #1e40af; border-bottom: 3px solid #d4af37; padding-bottom: 10px; }
-            h2 { color: #374151; margin-top: 30px; border-bottom: 2px solid #e5e7eb; padding-bottom: 5px; }
-            h3 { color: #4b5563; margin-top: 20px; }
-            table { border-collapse: collapse; width: 100%; margin: 20px 0; }
-            th { background-color: #1e40af; color: white; padding: 12px; text-align: left; border: 1px solid #ddd; }
-            td { padding: 10px; border: 1px solid #ddd; }
-            tr:nth-child(even) { background-color: #f9fafb; }
-            .stat-box { background-color: #eff6ff; padding: 15px; margin: 10px 0; border-left: 4px solid #3b82f6; }
-            .footer { margin-top: 40px; padding-top: 20px; border-top: 2px solid #e5e7eb; color: #6b7280; font-size: 12px; }
+            body {
+              font-family: Arial, sans-serif;
+              margin: 40px;
+              line-height: 1.6;
+            }
+            .header {
+              text-align: center;
+              margin-bottom: 30px;
+              padding-bottom: 20px;
+              border-bottom: 3px solid #d4af37;
+            }
+            h1 {
+              color: #1e40af;
+              font-size: 24pt;
+              margin-bottom: 10px;
+            }
+            .metadata {
+              background-color: #eff6ff;
+              padding: 15px;
+              margin: 20px 0;
+              border-left: 4px solid #3b82f6;
+            }
+            .metadata p {
+              margin: 5px 0;
+              font-size: 11pt;
+            }
+            h2 {
+              color: #374151;
+              margin-top: 40px;
+              margin-bottom: 20px;
+              padding-bottom: 10px;
+              border-bottom: 2px solid #e5e7eb;
+              font-size: 18pt;
+            }
+            .chart-container {
+              page-break-inside: avoid;
+              margin-bottom: 30px;
+              text-align: center;
+            }
+            .chart-container img {
+              max-width: 45%;
+              height: auto;
+              border: 1px solid #e5e7eb;
+              border-radius: 8px;
+              padding: 10px;
+              background: white;
+              margin: 10px;
+            }
+            .stats-summary {
+              background-color: #f9fafb;
+              padding: 20px;
+              margin: 20px 0;
+              border-radius: 8px;
+              border: 1px solid #e5e7eb;
+              text-align: center;
+            }
+            .footer {
+              margin-top: 50px;
+              padding-top: 20px;
+              border-top: 2px solid #e5e7eb;
+              color: #6b7280;
+              font-size: 10pt;
+              text-align: center;
+            }
+            @page {
+              margin: 2cm;
+            }
           </style>
         </head>
         <body>
-          <h1>📊 Informe de Seguimiento a Egresados - USEGBE</h1>
-          <p><strong>Fecha de generación:</strong> ${new Date().toLocaleDateString('es-EC', {
-            year: 'numeric', month: 'long', day: 'numeric'
-          })}</p>
-          <p><strong>Carrera seleccionada:</strong> ${this.selectedCareer}</p>
-          <p><strong>Total de registros:</strong> ${this.filteredData.length} de ${this.excelData.length}</p>
+          <div class="header">
+            <h1>📊 Informe de Seguimiento a Egresados</h1>
+            <p style="font-size: 14pt; color: #6b7280;">Unidad de Seguimiento a Egresados y Bolsa de Empleo (USEGBE)</p>
+          </div>
 
-          <h2>📈 Resumen Estadístico</h2>
+          <div class="metadata">
+            <p><strong>📅 Fecha de generación:</strong> ${new Date().toLocaleDateString('es-EC', {
+              year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+            })}</p>
+            <p><strong>🎓 Carrera seleccionada:</strong> ${this.selectedCareer}</p>
+            <p><strong>📊 Total de registros analizados:</strong> ${this.filteredData.length} de ${this.excelData.length}</p>
+          </div>
+
+          <div class="stats-summary">
+            <p><strong>Gráficos Generados:</strong> ${this.chartConfigs.length} |
+            <strong>Variables Analizadas:</strong> ${this.categoricalColumns.length} |
+            <strong>Encuestas Procesadas:</strong> ${this.filteredData.length}</p>
+          </div>
+
+          <h2>📈 Análisis Gráfico de Resultados</h2>
+          <p style="margin-bottom: 30px;">A continuación se presentan los gráficos estadísticos generados a partir del análisis de las encuestas de seguimiento a egresados:</p>
+
+          <div class="chart-container">
       `;
 
-      // Agregar estadísticas por columna
-      for (const col of this.categoricalColumns.slice(0, 10)) {
-        const dist = this.statisticsService.getDistribution(this.filteredData, col);
-        htmlContent += `
-          <div class="stat-box">
-            <h3>${col}</h3>
-            <p><strong>Total de categorías:</strong> ${dist.labels.length}</p>
-            <table>
-              <tr><th>Categoría</th><th>Cantidad</th><th>Porcentaje</th></tr>
-        `;
-
-        for (let i = 0; i < Math.min(5, dist.labels.length); i++) {
-          htmlContent += `
-            <tr>
-              <td>${dist.labels[i]}</td>
-              <td>${dist.data[i]}</td>
-              <td>${dist.percentages[i]}</td>
-            </tr>
-          `;
+      // Agregar cada gráfico como imagen (2 por fila)
+      chartImages.forEach((imageData, index) => {
+        htmlContent += `<img src="${imageData}" alt="Gráfico ${index + 1}" />`;
+        // Salto de línea cada 2 gráficos
+        if ((index + 1) % 2 === 0 && index < chartImages.length - 1) {
+          htmlContent += `<br/>`;
         }
-
-        htmlContent += `</table></div>`;
-      }
-
-      // Agregar tabla de datos (primeros 50 registros)
-      htmlContent += `
-        <h2>📋 Datos (primeros 50 registros)</h2>
-        <table>
-          <tr>
-      `;
-
-      // Headers
-      this.columns.slice(0, 10).forEach(col => {
-        htmlContent += `<th>${col}</th>`;
-      });
-      htmlContent += `</tr>`;
-
-      // Filas de datos
-      this.filteredData.slice(0, 50).forEach(row => {
-        htmlContent += `<tr>`;
-        this.columns.slice(0, 10).forEach(col => {
-          htmlContent += `<td>${row[col] || ''}</td>`;
-        });
-        htmlContent += `</tr>`;
       });
 
       htmlContent += `
-        </table>
-        <div class="footer">
-          <p><strong>Instituto Tecnológico Superior Quito Metropolitano (ITSQMET)</strong></p>
-          <p>Unidad de Seguimiento a Egresados y Bolsa de Empleo (USEGBE)</p>
-          <p>Documento generado automáticamente por el Sistema de Análisis de Encuestas</p>
-        </div>
+          </div>
+
+          <h2>📋 Observaciones y Análisis</h2>
+          <p>Este informe presenta un análisis visual de las respuestas obtenidas en las encuestas de seguimiento a egresados.
+          Los gráficos muestran la distribución de respuestas para cada una de las variables analizadas,
+          permitiendo identificar patrones y tendencias en los datos recopilados.</p>
+
+          <div class="footer">
+            <p><strong>Instituto Tecnológico Superior Quito Metropolitano (ITSQMET)</strong></p>
+            <p>Unidad de Seguimiento a Egresados y Bolsa de Empleo (USEGBE)</p>
+            <p style="margin-top: 10px; font-size: 9pt;">Documento generado automáticamente por el Sistema de Análisis de Encuestas</p>
+          </div>
         </body>
         </html>
       `;
 
-      // Crear blob y descargar
+      // Crear blob y descargar como .doc
       const blob = new Blob(['\ufeff', htmlContent], {
         type: 'application/msword'
       });
@@ -1200,10 +1264,10 @@ forceAllCharts(): void {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
-      console.log('✅ Documento Word exportado:', fileName);
+      console.log('✅ Documento Word con gráficos exportado:', fileName);
     } catch (error) {
       console.error('❌ Error exportando Word:', error);
-      this.errorMessage = 'Error al exportar a Word';
+      this.errorMessage = 'Error al exportar a Word. Intenta nuevamente.';
     }
   }
 

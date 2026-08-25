@@ -1086,108 +1086,124 @@ forceAllCharts(): void {
     }
   }
 
-  //========== EXPORTAR A DIFERENTES FORMATOS ==========
-  async exportToExcel(): Promise<void> {
+  //========== EXPORTAR A WORD ==========
+  async exportToWord(): Promise<void> {
     if (!this.hasData) {
       this.errorMessage = 'No hay datos para exportar';
       return;
     }
 
     try {
-      const XLSX = await import('xlsx');
-      const wb = XLSX.utils.book_new();
+      // Crear contenido HTML para el documento Word
+      let htmlContent = `
+        <html xmlns:o='urn:schemas-microsoft-com:office:office'
+              xmlns:w='urn:schemas-microsoft-com:office:word'
+              xmlns='http://www.w3.org/TR/REC-html40'>
+        <head>
+          <meta charset='utf-8'>
+          <title>Informe USEGBE</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 40px; }
+            h1 { color: #1e40af; border-bottom: 3px solid #d4af37; padding-bottom: 10px; }
+            h2 { color: #374151; margin-top: 30px; border-bottom: 2px solid #e5e7eb; padding-bottom: 5px; }
+            h3 { color: #4b5563; margin-top: 20px; }
+            table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+            th { background-color: #1e40af; color: white; padding: 12px; text-align: left; border: 1px solid #ddd; }
+            td { padding: 10px; border: 1px solid #ddd; }
+            tr:nth-child(even) { background-color: #f9fafb; }
+            .stat-box { background-color: #eff6ff; padding: 15px; margin: 10px 0; border-left: 4px solid #3b82f6; }
+            .footer { margin-top: 40px; padding-top: 20px; border-top: 2px solid #e5e7eb; color: #6b7280; font-size: 12px; }
+          </style>
+        </head>
+        <body>
+          <h1>📊 Informe de Seguimiento a Egresados - USEGBE</h1>
+          <p><strong>Fecha de generación:</strong> ${new Date().toLocaleDateString('es-EC', {
+            year: 'numeric', month: 'long', day: 'numeric'
+          })}</p>
+          <p><strong>Carrera seleccionada:</strong> ${this.selectedCareer}</p>
+          <p><strong>Total de registros:</strong> ${this.filteredData.length} de ${this.excelData.length}</p>
 
-      // Hoja 1: Datos filtrados
-      const ws1 = XLSX.utils.json_to_sheet(this.filteredData);
-      XLSX.utils.book_append_sheet(wb, ws1, 'Datos');
+          <h2>📈 Resumen Estadístico</h2>
+      `;
 
-      // Hoja 2: Estadísticas
-      const stats = this.categoricalColumns.map(col => {
+      // Agregar estadísticas por columna
+      for (const col of this.categoricalColumns.slice(0, 10)) {
         const dist = this.statisticsService.getDistribution(this.filteredData, col);
-        return {
-          Columna: col,
-          'Total Registros': dist.total,
-          'Categorías Únicas': dist.labels.length,
-          'Categoría Principal': dist.labels[0],
-          'Cantidad Principal': dist.data[0]
-        };
+        htmlContent += `
+          <div class="stat-box">
+            <h3>${col}</h3>
+            <p><strong>Total de categorías:</strong> ${dist.labels.length}</p>
+            <table>
+              <tr><th>Categoría</th><th>Cantidad</th><th>Porcentaje</th></tr>
+        `;
+
+        for (let i = 0; i < Math.min(5, dist.labels.length); i++) {
+          htmlContent += `
+            <tr>
+              <td>${dist.labels[i]}</td>
+              <td>${dist.data[i]}</td>
+              <td>${dist.percentages[i]}</td>
+            </tr>
+          `;
+        }
+
+        htmlContent += `</table></div>`;
+      }
+
+      // Agregar tabla de datos (primeros 50 registros)
+      htmlContent += `
+        <h2>📋 Datos (primeros 50 registros)</h2>
+        <table>
+          <tr>
+      `;
+
+      // Headers
+      this.columns.slice(0, 10).forEach(col => {
+        htmlContent += `<th>${col}</th>`;
       });
-      const ws2 = XLSX.utils.json_to_sheet(stats);
-      XLSX.utils.book_append_sheet(wb, ws2, 'Estadísticas');
+      htmlContent += `</tr>`;
 
-      // Exportar
-      const fileName = `USEGBE_Datos_${this.selectedCareer}_${new Date().toISOString().split('T')[0]}.xlsx`;
-      XLSX.writeFile(wb, fileName);
+      // Filas de datos
+      this.filteredData.slice(0, 50).forEach(row => {
+        htmlContent += `<tr>`;
+        this.columns.slice(0, 10).forEach(col => {
+          htmlContent += `<td>${row[col] || ''}</td>`;
+        });
+        htmlContent += `</tr>`;
+      });
 
-      console.log('✅ Excel exportado:', fileName);
-    } catch (error) {
-      console.error('❌ Error exportando Excel:', error);
-      this.errorMessage = 'Error al exportar a Excel';
-    }
-  }
+      htmlContent += `
+        </table>
+        <div class="footer">
+          <p><strong>Instituto Tecnológico Superior Quito Metropolitano (ITSQMET)</strong></p>
+          <p>Unidad de Seguimiento a Egresados y Bolsa de Empleo (USEGBE)</p>
+          <p>Documento generado automáticamente por el Sistema de Análisis de Encuestas</p>
+        </div>
+        </body>
+        </html>
+      `;
 
-  async exportToCSV(): Promise<void> {
-    if (!this.hasData) {
-      this.errorMessage = 'No hay datos para exportar';
-      return;
-    }
+      // Crear blob y descargar
+      const blob = new Blob(['\ufeff', htmlContent], {
+        type: 'application/msword'
+      });
 
-    try {
-      const XLSX = await import('xlsx');
-      const ws = XLSX.utils.json_to_sheet(this.filteredData);
-      const csv = XLSX.utils.sheet_to_csv(ws);
-
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement('a');
       const url = URL.createObjectURL(blob);
+      const fileName = `USEGBE_Informe_${this.selectedCareer}_${new Date().toISOString().split('T')[0]}.doc`;
 
       link.setAttribute('href', url);
-      link.setAttribute('download', `USEGBE_Datos_${this.selectedCareer}_${new Date().toISOString().split('T')[0]}.csv`);
+      link.setAttribute('download', fileName);
       link.style.visibility = 'hidden';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      URL.revokeObjectURL(url);
 
-      console.log('✅ CSV exportado');
+      console.log('✅ Documento Word exportado:', fileName);
     } catch (error) {
-      console.error('❌ Error exportando CSV:', error);
-      this.errorMessage = 'Error al exportar a CSV';
-    }
-  }
-
-  async exportToJSON(): Promise<void> {
-    if (!this.hasData) {
-      this.errorMessage = 'No hay datos para exportar';
-      return;
-    }
-
-    try {
-      const exportData = {
-        metadata: {
-          fecha: new Date().toISOString(),
-          carrera: this.selectedCareer,
-          totalRegistros: this.filteredData.length
-        },
-        datos: this.filteredData,
-        estadisticas: this.statistics
-      };
-
-      const json = JSON.stringify(exportData, null, 2);
-      const blob = new Blob([json], { type: 'application/json' });
-      const link = document.createElement('a');
-      const url = URL.createObjectURL(blob);
-
-      link.setAttribute('href', url);
-      link.setAttribute('download', `USEGBE_Datos_${this.selectedCareer}_${new Date().toISOString().split('T')[0]}.json`);
-      link.style.visibility = 'hidden';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      console.log('✅ JSON exportado');
-    } catch (error) {
-      console.error('❌ Error exportando JSON:', error);
-      this.errorMessage = 'Error al exportar a JSON';
+      console.error('❌ Error exportando Word:', error);
+      this.errorMessage = 'Error al exportar a Word';
     }
   }
 

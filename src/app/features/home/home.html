@@ -263,20 +263,10 @@
                                 <span class="material-icons text-sm text-red-600">picture_as_pdf</span>
                                 <span>PDF (con gráficos)</span>
                             </button>
-                            <button (click)="exportToExcel(); showChartEditor = false"
-                                class="w-full text-left px-3 py-2 text-xs hover:bg-gray-50 flex items-center gap-2 border-b border-gray-100">
-                                <span class="material-icons text-sm text-green-600">table_chart</span>
-                                <span>Excel (datos + estadísticas)</span>
-                            </button>
-                            <button (click)="exportToCSV(); showChartEditor = false"
-                                class="w-full text-left px-3 py-2 text-xs hover:bg-gray-50 flex items-center gap-2 border-b border-gray-100">
-                                <span class="material-icons text-sm text-blue-600">description</span>
-                                <span>CSV (datos)</span>
-                            </button>
-                            <button (click)="exportToJSON(); showChartEditor = false"
+                            <button (click)="exportToWord(); showChartEditor = false"
                                 class="w-full text-left px-3 py-2 text-xs hover:bg-gray-50 flex items-center gap-2">
-                                <span class="material-icons text-sm text-orange-600">code</span>
-                                <span>JSON (completo)</span>
+                                <span class="material-icons text-sm text-blue-700">description</span>
+                                <span>Word (informe completo)</span>
                             </button>
                         </div>
                         }

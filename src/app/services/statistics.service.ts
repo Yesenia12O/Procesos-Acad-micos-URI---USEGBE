@@ -178,7 +178,7 @@ export class StatisticsService {
       percentages.push(otherPercent);
     }
 
-    // Paleta de colores vibrantes y variados con intercalación óptima
+    // Paleta de colores vibrantes y variados con intercalación óptima (50+ colores)
     const colors = [
       'rgba(59,130,246,0.85)',    // Azul brillante
       'rgba(239,68,68,0.85)',     // Rojo coral
@@ -209,7 +209,37 @@ export class StatisticsService {
       'rgba(217,70,239,0.85)',    // Púrpura neón
       'rgba(234,88,12,0.85)',     // Naranja quemado
       'rgba(8,145,178,0.85)',     // Azul petróleo
-      'rgba(190,18,60,0.85)'      // Rosa oscuro
+      'rgba(190,18,60,0.85)',     // Rosa oscuro
+      'rgba(120,53,15,0.85)',     // Marrón chocolate
+      'rgba(13,148,136,0.85)',    // Verde azulado
+      'rgba(237,137,54,0.85)',    // Naranja terracota
+      'rgba(88,28,135,0.85)',     // Púrpura oscuro
+      'rgba(21,128,61,0.85)',     // Verde bosque
+      'rgba(225,29,72,0.85)',     // Rojo cereza
+      'rgba(67,56,202,0.85)',     // Azul índigo profundo
+      'rgba(202,138,4,0.85)',     // Dorado oscuro
+      'rgba(180,83,9,0.85)',      // Naranja óxido
+      'rgba(109,40,217,0.85)',    // Violeta real
+      'rgba(4,120,87,0.85)',      // Verde jade
+      'rgba(244,114,182,0.85)',   // Rosa chicle
+      'rgba(30,58,138,0.85)',     // Azul marino
+      'rgba(153,27,27,0.85)',     // Rojo granate
+      'rgba(91,33,182,0.85)',     // Púrpura imperial
+      'rgba(22,163,74,0.85)',     // Verde césped
+      'rgba(190,24,93,0.85)',     // Rosa fucsia oscuro
+      'rgba(217,119,6,0.85)',     // Naranja otoño
+      'rgba(30,64,175,0.85)',     // Azul cobalto
+      'rgba(101,163,13,0.85)',    // Verde oliva brillante
+      'rgba(157,23,77,0.85)',     // Magenta vino
+      'rgba(194,65,12,0.85)',     // Rojo ladrillo
+      'rgba(79,70,229,0.85)',     // Azul periwinkle
+      'rgba(4,108,78,0.85)',      // Verde pino
+      'rgba(225,83,112,0.85)',    // Rosa salmón
+      'rgba(161,98,7,0.85)',      // Dorado bronce
+      'rgba(55,48,163,0.85)',     // Azul medianoche
+      'rgba(124,45,18,0.85)',     // Marrón caoba
+      'rgba(17,94,89,0.85)',      // Verde azulado profundo
+      'rgba(159,18,57,0.85)'      // Rojo borgoña
     ];
 
     return {
